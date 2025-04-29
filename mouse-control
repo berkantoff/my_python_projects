@@ -1,0 +1,39 @@
+import RPi.GPIO as GPIO
+import time
+import pyautogui
+
+# GPIO ayarları
+GPIO.setmode(GPIO.BCM)
+servo_pin = 15
+GPIO.setup(servo_pin, GPIO.OUT)
+
+pwm = GPIO.PWM(servo_pin, 50)  # 50Hz
+pwm.start(0)
+
+# Servo açı ayarlayıcı
+def set_angle(angle):
+    duty = 2 + (angle / 18)
+    GPIO.output(servo_pin, True)
+    pwm.ChangeDutyCycle(duty)
+    time.sleep(0.05)
+    GPIO.output(servo_pin, False)
+    pwm.ChangeDutyCycle(0)
+
+# Ekran boyutunu al
+screen_width, _ = pyautogui.size()
+
+try:
+    print("Fareyi sağa/sola oynatarak servo motoru döndür.")
+    while True:
+        mouse_x, _ = pyautogui.position()
+        print(mouse_x)
+        angle = int((mouse_x / screen_width) * 180)
+        print(angle)
+        set_angle(angle)
+        time.sleep(0.1)
+
+except KeyboardInterrupt:
+    print("Program sonlandırılıyor...")
+
+pwm.stop()
+GPIO.cleanup()
