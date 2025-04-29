@@ -1,0 +1,36 @@
+import RPi.GPIO as GPIO
+import time
+
+# GPIO pin numaralandırma modu
+GPIO.setmode(GPIO.BCM)
+
+# Servo pinini tanımla
+servo_pin = 17
+GPIO.setup(servo_pin, GPIO.OUT)
+
+# PWM sinyali başlat (50Hz - standart servo frekansı)
+pwm = GPIO.PWM(servo_pin, 50)
+pwm.start(0)  # Başlangıçta 0 duty cycle
+
+# Açıya göre duty cycle hesaplayan fonksiyon
+def set_angle(angle):
+    duty = 2 + (angle / 18)
+    GPIO.output(servo_pin, True)
+    pwm.ChangeDutyCycle(duty)
+    time.sleep(0.5)
+    GPIO.output(servo_pin, False)
+    pwm.ChangeDutyCycle(0)
+
+try:
+    while True:
+        angle = int(input("0-180 arasında açı gir: "))
+        if 0 <= angle <= 180:
+            set_angle(angle)
+        else:
+            print("Geçerli bir açı gir.")
+except KeyboardInterrupt:
+    print("Çıkılıyor...")
+
+# Temizlik
+pwm.stop()
+GPIO.cleanup()
