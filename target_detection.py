@@ -4,7 +4,8 @@ import numpy as np
 def detect_target(frame):
     output = frame.copy()
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    gray = cv2.GaussianBlur(gray, (7, 7), 2)
+    # Gausian blur ile gürültüyü azalt en sağdaki değeri arttırdıkça softlaşır 
+    gray = cv2.GaussianBlur(gray, (9, 9), 4)
 
     circles = cv2.HoughCircles(
         gray,
